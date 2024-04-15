@@ -354,7 +354,6 @@ namespace ApiAthanasia.Repositories
 
         #region PRODUCTO_SIMPLE_VIEW
 
-
         public async Task<ProductoSimpleView> GetProductoSimpleByIdAsync(int idproducto)
         {
             ProductoSimpleView producto = await this.context.ProductosSimplesView.FirstOrDefaultAsync(p => p.IdProducto == idproducto);

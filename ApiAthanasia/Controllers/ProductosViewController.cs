@@ -18,6 +18,10 @@ namespace ApiAthanasia.Controllers
         {
             this.repo = repo;
         }
+        /// <summary>
+        /// Método para recuperar una vista completa de los Productos.
+        /// </summary>
+        /// <response code="200">Devuelve una lista de productos.</response>
         [HttpGet]
         public async Task<ActionResult<List<ProductoView>>> ProductosView()
         {
@@ -25,20 +29,40 @@ namespace ApiAthanasia.Controllers
             return productos;
         }
 
+        /// <summary>
+        /// Método para buscar un ProductoView por Id.
+        /// </summary>
+        /// <param name="id">Id del ProductoView.</param>
+        /// <response code="200">Devuelve el ProductoView encontrado.</response>
+        /// <response code="404">NotFound. No se ha encontrado el ProductoView.</response>
         [HttpGet]
         [Route("{id}")]
         public async Task<ActionResult<ProductoView>> ProductoView(int id)
         {
-            ProductoView productos = await this.repo.GetProductoByIdAsync(id);
-            return productos;
+            ProductoView producto = await this.repo.GetProductoByIdAsync(id);
+            if (producto == null)
+            {
+                return NotFound();
+            }
+            return producto;
         }
 
+        /// <summary>
+        /// Método para buscar productos por formato.
+        /// </summary>
+        /// <param name="idformato">Id del formato de los productos a buscar.</param>
+        /// <response code="200">Devuelve una lista de ProductoView que corresponden al formato especificado.</response>
+        /// <response code="404">NotFound. No se ha encontrado el formato especificado.</response>
         [HttpGet]
         [Route("[action]/{idformato}")]
         public async Task<ActionResult<List<ProductoView>>> ByFormato(int idformato)
         {
             Formato formato = await this.repo.GetFormatoByIdAsync(idformato);
             List<ProductoView> productos = await this.repo.GetProductoViewByFormatoAsync(formato.Nombre);
+            if (productos.Count==0)
+            {
+                return NotFound();
+            }
             return productos;
         }
     }
