@@ -515,7 +515,11 @@ namespace ApiAthanasia.Repositories
             usuario.Token = HelperTools.GenerateTokenMail();
             usuario.IdRol = HelperTools.GetRolId(Roles.Cliente);
             this.context.Usuarios.Add(usuario);
-            await context.SaveChangesAsync();
+            int result = await context.SaveChangesAsync();
+            if (result == -1)
+            {
+                return null;
+            }
             return usuario;
         }
 
