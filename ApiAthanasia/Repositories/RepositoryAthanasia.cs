@@ -470,6 +470,10 @@ namespace ApiAthanasia.Repositories
         public async Task<Usuario> UpdateUsuarioAsync(int idusuario, string nombre, string apellido, string email, string? imagen)
         {
             Usuario usuario = await this.FindUsuarioByIdAsync(idusuario);
+            if (usuario == null)
+            {
+                return null;
+            }
             usuario.Nombre = nombre;
             usuario.Apellido = apellido;
             usuario.Email = email;
@@ -484,7 +488,10 @@ namespace ApiAthanasia.Repositories
         public async Task<int> DeleteUsuarioAsync(int idusuario)
         {
             Usuario usuario = await this.FindUsuarioByIdAsync(idusuario);
-            this.context.Usuarios.Remove(usuario);
+            if (usuario != null)
+            {
+                this.context.Usuarios.Remove(usuario);
+            }
             return await this.context.SaveChangesAsync();
         }
 
@@ -516,7 +523,7 @@ namespace ApiAthanasia.Repositories
             usuario.IdRol = HelperTools.GetRolId(Roles.Cliente);
             this.context.Usuarios.Add(usuario);
             int result = await context.SaveChangesAsync();
-            if (result == -1)
+            if (result == 0)
             {
                 return null;
             }
@@ -526,6 +533,10 @@ namespace ApiAthanasia.Repositories
         public async Task<Usuario> ActivarUsuarioAsync(string token)
         {
             Usuario user = await this.context.Usuarios.FirstOrDefaultAsync(u => u.Token == token);
+            if (user == null)
+            {
+                return null;
+            }
             user.IdEstado = HelperTools.GetEstadoId(Estados.Activo);
             user.Token = "";
             await this.context.SaveChangesAsync();
@@ -578,6 +589,10 @@ namespace ApiAthanasia.Repositories
         public async Task<Usuario> UpdateUsuarioPasswordAsync(int idusuario, string password)
         {
             Usuario usuario = await this.context.Usuarios.FirstOrDefaultAsync(u => u.IdUsuario == idusuario);
+            if (usuario == null)
+            {
+                return null;
+            }
             usuario.Salt = HelperTools.GenerateSalt();
             usuario.Pass = HelperCryptography.EncryptPassword(password, usuario.Salt);
             await this.context.SaveChangesAsync();

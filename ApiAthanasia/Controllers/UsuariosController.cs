@@ -1,7 +1,11 @@
-﻿using ApiAthanasia.Models.Tables;
+﻿using ApiAthanasia.Helpers;
+using ApiAthanasia.Models.Api;
+using ApiAthanasia.Models.Tables;
 using ApiAthanasia.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Primitives;
+using static System.Net.Mime.MediaTypeNames;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ApiAthanasia.Controllers
@@ -17,7 +21,7 @@ namespace ApiAthanasia.Controllers
             this.repo = repo;
         }
         [HttpGet("{id}")]
-        public async Task<ActionResult<Usuario>> Usuario(int id)
+        public async Task<ActionResult<Usuario>> FindUsuario(int id)
         {
             Usuario usuario = await this.repo.FindUsuarioByIdAsync(id);
             if (usuario == null)
@@ -29,11 +33,12 @@ namespace ApiAthanasia.Controllers
 
         [HttpGet]
         [Route("[action]")]
-        public async Task<ActionResult<Usuario>> UsuarioToken([FromHeader]string authentication)
+        public async Task<ActionResult<Usuario>> UsuarioTokenMail()
         {
-            string token = authentication.Replace("bearer ", "");
+            string[] header = HttpContext.Request.Headers["Authorization"].ToString().Split();
+            string token = header[1];
             Usuario usuario = await this.repo.GetUsuarioByTokenAsync(token);
-            if (usuario==null)
+            if (usuario == null)
             {
                 return NotFound();
             }
@@ -41,26 +46,74 @@ namespace ApiAthanasia.Controllers
         }
 
         [HttpPost]
-        [Route("[action]/{nombre}/{apellido}/{email}/{password}")]
-        public async Task<ActionResult<Usuario>> Registro(string nombre,string apellido,string email,string password)
+        public async Task<ActionResult<Usuario>> Registro(UsuarioPost u)
         {
-            Usuario user = await this.repo.RegistrarUsuarioAsync(nombre, apellido, email, password);
-            if (user == null)
+            Usuario usuario = await this.repo.RegistrarUsuarioAsync(u.Nombre, u.Apellido, u.Email, u.Password);
+            if (usuario == null)
             {
                 return BadRequest();
             }
-            return user;
+            return usuario;
         }
 
-        //[HttpPut]
-        //public async Task<ActionResult<Usuario>> 
+        [HttpPut]
+        public async Task<ActionResult<Usuario>> Update(UsuarioPut u)
+        {
+            Usuario usuario = await this.repo.UpdateUsuarioAsync(u.IdUsuario, u.Nombre, u.Apellido, u.Email, u.Imagen);
+            if (usuario == null)
+            {
+                return NotFound();
+            }
+            return usuario;
+        }
 
+        [HttpPut]
+        [Route("[action]/{idusuario}/{newpassword}")]
+        public async Task<ActionResult> UpdatePassword(int idusuario, string newpassword)
+        {
+            Usuario usuario = await this.repo.UpdateUsuarioPasswordAsync(idusuario, newpassword);
+            if (usuario == null)
+            {
+                return NotFound();
+            }
+            return NoContent();
+        }
 
+        [HttpPut]
+        [Route("[action]/{idusuario}")]
+        public async Task<ActionResult> UpdateToken(int idusuario)
+        {
+            Usuario usuario = await this.repo.UpdateUsuarioTokenAsync(idusuario);
+            if (usuario == null)
+            {
+                return NotFound();
+            }
+            return NoContent();
+        }
 
-        //UpdateUsuarioAsync(int idusuario, string nombre, string apellido, string email, string? imagen)
-        //DeleteUsuarioAsync(int idusuario),
-        //ActivarUsuarioAsync(string token),LogInUserAsync(string email, string password)
-        //UpdateUsuarioTokenAsync(int idusuario),
-        //UpdateUsuarioPasswordAsync(int idusuario, string password)
+        [HttpPut]
+        [Route("[action]/{token}")]
+        public async Task<ActionResult> ActivarUsuario(string token)
+        {
+            Usuario usuario = await this.repo.ActivarUsuarioAsync(token);
+            if (usuario == null)
+            {
+                return NotFound();
+            }
+            return NoContent();
+        }
+
+        [HttpDelete]
+        public async Task<ActionResult> Delete(int id)
+        {
+            int result = await this.repo.DeleteUsuarioAsync(id);
+            if (result == 0)
+            {
+                return NotFound();
+            }
+            return NoContent();
+        }
+
+       
     }
 }

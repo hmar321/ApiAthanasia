@@ -13,15 +13,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-//builder.Services.AddSwaggerGen(options =>
-//{
-//    options.SwaggerDoc("v1", new OpenApiInfo
-//    {
-//        Title = "Api Athanasia",
-//        Description = "Api para mi proyecto Azure"
-//    });
-//}); ;
-// REGISTRAMOS SWAGGER COMO SERVICIO
+HelperActionServicesOAuth helper = new HelperActionServicesOAuth(builder.Configuration);
+builder.Services.AddSingleton<HelperActionServicesOAuth>(helper);
+builder.Services.AddAuthentication(helper.GetAuthenticateSchema()).AddJwtBearer(helper.GetJwtBearerOptions());
 builder.Services.AddOpenApiDocument(document =>
 {
     document.Title = "Api Athanasia";
@@ -65,7 +59,8 @@ app.UseSwaggerUI(options =>
 });
 
 app.UseHttpsRedirection();
-//app.UseStaticFiles();
+app.UseStaticFiles();
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
