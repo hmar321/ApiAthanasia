@@ -50,15 +50,14 @@ namespace ApiAthanasia.Controllers
         /// <summary>
         /// Método para buscar productos por formato.
         /// </summary>
-        /// <param name="idformato">Id del formato de los productos a buscar.</param>
+        /// <param name="formato">Formato de los productos a buscar.</param>
         /// <response code="200">Devuelve una lista de ProductoView que corresponden al formato especificado.</response>
         /// <response code="404">NotFound. No se ha encontrado el formato especificado.</response>
         [HttpGet]
-        [Route("[action]/{idformato}")]
-        public async Task<ActionResult<List<ProductoView>>> ByFormato(int idformato)
+        [Route("[action]/{formato}")]
+        public async Task<ActionResult<List<ProductoView>>> ByFormato(string formato)
         {
-            Formato formato = await this.repo.GetFormatoByIdAsync(idformato);
-            List<ProductoView> productos = await this.repo.GetProductoViewByFormatoAsync(formato.Nombre);
+            List<ProductoView> productos = await this.repo.GetProductoViewByFormatoAsync(formato);
             if (productos.Count==0)
             {
                 return NotFound();
