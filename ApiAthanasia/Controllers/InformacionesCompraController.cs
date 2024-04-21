@@ -57,19 +57,19 @@ namespace ApiAthanasia.Controllers
         /// METODO PROTEGIDO Elimina una información de compra por su Id.
         /// </summary>
         /// <param name="id">Id de la información de compra a eliminar.</param>
-        /// <response code="204">NoContent. La información de compra ha sido eliminada correctamente.</response>
+        /// <response code="200">Devuelve el número de elementos eliminados.</response>
         /// <response code="401">Unauthorized. No se ha proporcionado un token válido.</response>
         /// <response code="404">NotFound. No se ha encontrado la información de compra especificada.</response>
         [Authorize]
         [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(int id)
+        public async Task<ActionResult<int>> Delete(int id)
         {
             int result = await this.repo.DeleteInformacionCompraByIdAsync(id);
             if (result == 0)
             {
                 return NotFound();
             }
-            return NoContent();
+            return result;
         }
     }
 }

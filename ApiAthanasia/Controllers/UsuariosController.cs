@@ -28,6 +28,7 @@ namespace ApiAthanasia.Controllers
         /// </summary>
         /// <param name="id">Id del usuario a buscar.</param>
         /// <response code="200">Devuelve el usuario encontrado.</response>
+        /// <response code="401">Unauthorized. No se ha proporcionado un token válido.</response>
         /// <response code="404">NotFound. No se ha encontrado el usuario especificado.</response>
         [Authorize]
         [HttpGet("{id}")]
@@ -45,6 +46,7 @@ namespace ApiAthanasia.Controllers
         /// METODO PROTEGIDO Obtiene el usuario asociado al token de autorización.
         /// </summary>
         /// <response code="200">Devuelve el usuario asociado al token de autorización.</response>
+        /// <response code="401">Unauthorized. No se ha proporcionado un token válido.</response>
         /// <response code="404">NotFound. No se ha encontrado el usuario asociado al token.</response>
         [Authorize]
         [HttpGet]
@@ -66,6 +68,7 @@ namespace ApiAthanasia.Controllers
         /// </summary>
         /// <param name="token">Token de correo electrónico.</param>
         /// <response code="200">Devuelve el usuario asociado al token de correo electrónico.</response>
+        /// <response code="401">Unauthorized. No se ha proporcionado un token válido.</response>
         /// <response code="404">NotFound. No se ha encontrado el usuario asociado al token de correo electrónico.</response>
         [Authorize]
         [HttpGet]
@@ -102,6 +105,7 @@ namespace ApiAthanasia.Controllers
         /// </summary>
         /// <param name="usuario">Datos actualizados del usuario.</param>
         /// <response code="200">Devuelve el usuario actualizado.</response>
+        /// <response code="401">Unauthorized. No se ha proporcionado un token válido.</response>
         /// <response code="404">NotFound. No se ha encontrado el usuario especificado.</response>
         [Authorize]
         [HttpPut]
@@ -120,73 +124,77 @@ namespace ApiAthanasia.Controllers
         /// </summary>
         /// <param name="idusuario">Id del usuario cuya contraseña se actualizará.</param>
         /// <param name="newpassword">Nueva contraseña.</param>
-        /// <response code="204">NoContent. La contraseña del usuario ha sido actualizada correctamente.</response>
+        /// <response code="200">Devuelve el usuario con la contraseña actualizada.</response>
+        /// <response code="401">Unauthorized. No se ha proporcionado un token válido.</response>
         /// <response code="404">NotFound. No se ha encontrado el usuario especificado.</response>
         [Authorize]
         [HttpPut]
         [Route("[action]/{idusuario}/{newpassword}")]
-        public async Task<ActionResult> UpdatePassword(int idusuario, string newpassword)
+        public async Task<ActionResult<Usuario>> UpdatePassword(int idusuario, string newpassword)
         {
             Usuario usuario = await this.repo.UpdateUsuarioPasswordAsync(idusuario, newpassword);
             if (usuario == null)
             {
                 return NotFound();
             }
-            return NoContent();
+            return usuario;
         }
 
         /// <summary>
         /// METODO PROTEGIDO Actualiza el token de correo electrónico de un usuario.
         /// </summary>
         /// <param name="idusuario">Id del usuario cuyo token de correo electrónico se actualizará.</param>
-        /// <response code="204">NoContent. El token de correo electrónico del usuario ha sido actualizado correctamente.</response>
+        /// <response code="200">Devuelve el usuario con el token actualizado.</response>
+        /// <response code="401">Unauthorized. No se ha proporcionado un token válido.</response>
         /// <response code="404">NotFound. No se ha encontrado el usuario especificado.</response>
         [Authorize]
         [HttpPut]
         [Route("[action]/{idusuario}")]
-        public async Task<ActionResult> UpdateTokenMail(int idusuario)
+        public async Task<ActionResult<Usuario>> UpdateTokenMail(int idusuario)
         {
             Usuario usuario = await this.repo.UpdateUsuarioTokenAsync(idusuario);
             if (usuario == null)
             {
                 return NotFound();
             }
-            return NoContent();
+            return usuario;
         }
 
         /// <summary>
         /// Activa un usuario utilizando un token de correo electrónico.
         /// </summary>
         /// <param name="token">Token de correo electrónico.</param>
-        /// <response code="204">NoContent. El usuario ha sido activado correctamente.</response>
+        /// <response code="200">Devuelve el usuario activado.</response>
         /// <response code="404">NotFound. No se ha encontrado el usuario asociado al token de correo electrónico.</response>
         [HttpPut]
         [Route("[action]/{token}")]
-        public async Task<ActionResult> ActivarUsuario(string token)
+        public async Task<ActionResult<Usuario>> ActivarUsuario(string token)
         {
             Usuario usuario = await this.repo.ActivarUsuarioAsync(token);
             if (usuario == null)
             {
                 return NotFound();
             }
-            return NoContent();
+            return usuario;
         }
 
         /// <summary>
-        /// Elimina un usuario por su Id.
+        /// METODO PROTEGIDO Elimina un usuario por su Id.
         /// </summary>
         /// <param name="id">Id del usuario a eliminar.</param>
-        /// <response code="204">NoContent. El usuario ha sido eliminado correctamente.</response>
+        /// <response code="200">Devuelve el número de usuarios eliminados.</response>
+        /// <response code="401">Unauthorized. No se ha proporcionado un token válido.</response>
         /// <response code="404">NotFound. No se ha encontrado el usuario especificado.</response>
+        [Authorize]
         [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(int id)
+        public async Task<ActionResult<int>> Delete(int id)
         {
             int result = await this.repo.DeleteUsuarioAsync(id);
             if (result == 0)
             {
                 return NotFound();
             }
-            return NoContent();
+            return result;
         }
 
 

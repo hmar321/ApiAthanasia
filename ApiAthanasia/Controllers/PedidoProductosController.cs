@@ -19,24 +19,23 @@ namespace ApiAthanasia.Controllers
         }
 
         /// <summary>
-        /// METODO PROTEGIDO Inserta una lista de productos en un pedido existente.
+        /// METODO PROTEGIDO Inserta una lista de productos en un pedido asociado a un usuario específico.
         /// </summary>
-        /// <param name="idpedido">Id del pedido al cual se agregarán los productos.</param>
+        /// <param name="idusuario">Id del usuario al cual se asociará el pedido.</param>
         /// <param name="productos">Lista de productos a agregar al pedido.</param>
-        /// <response code="204">NoContent. Los productos se han agregado correctamente al pedido.</response>
+        /// <response code="200">Devuelve el número de productos insertados en el pedido.</response>
         /// <response code="400">BadRequest. No se pudieron agregar los productos al pedido.</response>
-        /// <response code="401">Unauthorized. No se ha proporcionado un token válido.</response>
         [Authorize]
         [HttpPost]
-        [Route("[action]/{idpedido}")]
-        public async Task<ActionResult> InsertPedidoProductos(int idpedido, List<PedidoProducto> productos)
+        [Route("[action]/{idusuario}")]
+        public async Task<ActionResult<int>> InsertPedidoProductos(int idusuario, List<PedidoProducto> productos)
         {
-            int result = await this.repo.InsertListPedidoProductosAsync(idpedido, productos);
+            int result = await this.repo.InsertListPedidoProductosAsync(idusuario, productos);
             if (result == 0)
             {
                 return BadRequest();
             }
-            return NoContent();
+            return result;
         }
     }
 }
