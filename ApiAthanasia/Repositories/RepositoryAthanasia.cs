@@ -7,6 +7,7 @@ using ApiAthanasia.Models.Views;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
+using System.Diagnostics.Metrics;
 
 #region VIEWS
 //create view V_PEDIDO_PRODUCTO as
@@ -28,9 +29,9 @@ using System.Data;
 //inner join LIBRO l on p.ID_LIBRO=l.ID_LIBRO
 //left join AUTOR a on l.ID_AUTOR=a.ID_AUTOR
 
-//create view V_PEDIDO as
+//alter view V_PEDIDO as
 //select 
-//p.ID_PEDIDO,
+//ISNULL(p.ID_PEDIDO,-1) ID_PEDIDO,
 //p.ID_USUARIO,
 //p.FECHA_SOLICITUD,
 //P.FECHA_ESTIMADA,
@@ -91,9 +92,9 @@ using System.Data;
 //inner join PRODUCTO p on l.ID_LIBRO=p.ID_LIBRO and p.PRECIO is not null
 //inner join FORMATO f on p.ID_FORMATO=f.ID_FORMATO and f.NOMBRE is not null
 
-//create view V_PEDIDO_PRODUCTOS as
+//alter view V_PEDIDO_PRODUCTO as
 // select 
-//	pp.ID_PEDIDO_PRODUCTO,
+//   ISNULL(pp.ID_PEDIDO_PRODUCTO,-1) ID_PEDIDO_PRODUCTO,
 //   p.ID_PEDIDO,
 //   l.TITULO,
 //   f.NOMBRE FORMATO,
@@ -103,7 +104,7 @@ using System.Data;
 //from PEDIDO p
 //inner join ESTADO_PEDIDO ep on p.ID_ESTADO_PEDIDO=ep.ID_ESTADO_PEDIDO
 //inner join PEDIDOS_PRODUCTOS pp on p.ID_PEDIDO=pp.ID_PEDIDO
-//inner join PRODUCTO pr on pr.ID_PRODUCTO=pr.ID_PRODUCTO
+//inner join PRODUCTO pr on pr.ID_PRODUCTO=pp.ID_PRODUCTO
 //inner join FORMATO f on pr.ID_FORMATO=f.ID_FORMATO
 //inner join LIBRO l on pr.ID_LIBRO=l.ID_LIBRO
 
@@ -129,7 +130,7 @@ using System.Data;
 //inner join GENERO g on gl.ID_GENERO=g.ID_GENERO
 //left join SAGA s on l.ID_SAGA=s.ID_SAGA
 
-//create view SP_FORMATO_LIBRO as
+//create view V_FORMATO_LIBRO as
 //select ISNULL(ID_PRODUCTO,-1) ID_PRODUCTO, ID_LIBRO, f.NOMBRE FORMATO from PRODUCTO p
 //inner join FORMATO f on f.ID_FORMATO=p.ID_FORMATO
 
@@ -321,6 +322,7 @@ using System.Data;
 
 namespace ApiAthanasia.Repositories
 {
+    //GetAllPedidoViewByIdUsuario
     public class RepositoryAthanasia : IRepositoryAthanasia
     {
         private AthanasiaContext context;
@@ -617,13 +619,14 @@ namespace ApiAthanasia.Repositories
 
         }
 
-        public async Task<int> InsertListPedidoProductosAsync(int idpedido, List<PedidoProducto> productos)
+        public async Task<int> InsertListPedidoProductosAsync(int idusuario, List<PedidoProducto> productos)
         {
+            Pedido pedido = await this.InsertPedidoAsync(idusuario);
             int nextId = GetPedidoProductoNextId();
             foreach (PedidoProducto prod in productos)
             {
                 prod.IdPedidoProducto = nextId;
-                prod.IdPedido = idpedido;
+                prod.IdPedido = pedido.IdPedido;
                 await this.context.PedidosProductos.AddAsync(prod);
                 nextId++;
             }
@@ -713,7 +716,10 @@ namespace ApiAthanasia.Repositories
         public async Task<int> DeleteInformacionCompraByIdAsync(int idinfocompra)
         {
             InformacionCompra info = await this.GetInformacionCompraByIdAsync(idinfocompra);
-            this.context.Remove(info);
+            if (info != null)
+            {
+                this.context.Remove(info);
+            }
             return await this.context.SaveChangesAsync();
         }
 
@@ -740,6 +746,10 @@ namespace ApiAthanasia.Repositories
         public async Task<int> UpdatePedidoEstadoCancelarAsync(int idpedido)
         {
             Pedido pedido = await this.context.Pedidos.FirstOrDefaultAsync(p => p.IdPedido == idpedido);
+            if (pedido != null)
+            {
+                return -1;
+            }
             //ID DEL ESTADO CANCELADO
             pedido.IdEstadoPedido = 7;
             return await this.context.SaveChangesAsync();
@@ -760,7 +770,6 @@ namespace ApiAthanasia.Repositories
         }
         public async Task<Pedido> InsertPedidoAsync(int idusuario)
         {
-            //id procesando
             int estadopedido = 2;
             int nextid = GetPedidoNextId();
             Pedido pedido = new Pedido
@@ -788,13 +797,14 @@ namespace ApiAthanasia.Repositories
 
         #endregion
 
-        #region PEDIDOS_PRODUCTO_VIEW
+        #region PEDIDO_PRODUCTOS_VIEW
         public async Task<List<PedidoProductoView>> GetPedidoProductoViewsByIdPedidoAsync(int idpedido)
         {
             return await this.context.PedidosProductoView.Where(p => p.IdPedido == idpedido).ToListAsync();
         }
 
         #endregion
+
         #region FORMATO
         public async Task<List<Formato>> GetAllFormatosAsync()
         {

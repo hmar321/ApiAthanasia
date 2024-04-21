@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 
 namespace ApiAthanasia.Controllers
 {
@@ -24,6 +25,12 @@ namespace ApiAthanasia.Controllers
             this.helper = helper;
         }
 
+        /// <summary>
+        /// Realiza el inicio de sesión de un usuario.
+        /// </summary>
+        /// <param name="model">Modelo de datos de inicio de sesión.</param>
+        /// <response code="200">Inicio de sesión exitoso. Devuelve un token JWT válido.</response>
+        /// <response code="401">Unauthorized. Las credenciales proporcionadas son inválidas.</response>
         [HttpPost]
         [Route("[action]")]
         public async Task<ActionResult> Login(LoginModel model)
@@ -35,7 +42,8 @@ namespace ApiAthanasia.Controllers
             }
             SigningCredentials credentials = new SigningCredentials(this.helper.GetKeyToken(), SecurityAlgorithms.HmacSha256);
             string jsonUsuario = JsonConvert.SerializeObject(usuario);
-            HelperCryptography.EncryptString("UserJson", jsonUsuario);
+            //string key = HelperTools.GenerateUserClaimsKey();
+            //HelperCryptography.EncryptString(key, jsonUsuario);
             Claim[] informacion = new[]
                 {
                     new Claim("UserData",jsonUsuario),

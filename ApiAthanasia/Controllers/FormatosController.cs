@@ -1,6 +1,9 @@
 ﻿using ApiAthanasia.Models.Tables;
 using ApiAthanasia.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using ApiAthanasia.Helpers;
+using Newtonsoft.Json;
 
 namespace ApiAthanasia.Controllers
 {

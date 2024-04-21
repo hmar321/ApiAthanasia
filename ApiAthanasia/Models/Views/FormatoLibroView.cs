@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ApiAthanasia.Models.Views
 {
-    [Table("SP_FORMATO_LIBRO")]
+    [Table("V_FORMATO_LIBRO")]
     public class FormatoLibroView
     {
         [Key]

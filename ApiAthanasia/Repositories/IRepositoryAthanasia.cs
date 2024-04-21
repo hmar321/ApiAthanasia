@@ -23,9 +23,6 @@ namespace ApiAthanasia.Repositories
         Task<Genero> GetGeneroByNombreAsync(string nombre);
         Task<InformacionCompra> GetInformacionCompraByIdAsync(int id);
         Task<List<MetodoPago>> GetMetodoPagosAsync();
-        Task<int> GetNextIdInformacionCompraAsync();
-        int GetPedidoNextId();
-        int GetPedidoProductoNextId();
         Task<List<PedidoProductoView>> GetPedidoProductoViewsByIdPedidoAsync(int idpedido);
         Task<ProductoView> GetProductoByIdAsync(int idproducto);
         Task<ProductoSimpleView> GetProductoSimpleByIdAsync(int idproducto);
@@ -35,7 +32,7 @@ namespace ApiAthanasia.Repositories
         Task<List<ProductoView>> GetProductoViewByFormatoAsync(string formato);
         Task<Usuario> GetUsuarioByTokenAsync(string token);
         Task<InformacionCompra> InsertInformacionAsync(string nombre, string direccion, string indicaciones, int idmetodopago, int idusuario);
-        Task<int> InsertListPedidoProductosAsync(int idpedido, List<PedidoProducto> productos);
+        Task<int> InsertListPedidoProductosAsync(int idusuario, List<PedidoProducto> productos);
         Task<Pedido> InsertPedidoAsync(int idusuario);
         Task<Usuario> LogInUserAsync(string email, string password);
         Task<Usuario> RegistrarUsuarioAsync(string nombre, string apellido, string email, string password);

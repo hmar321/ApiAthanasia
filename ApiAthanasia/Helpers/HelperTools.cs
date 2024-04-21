@@ -58,6 +58,22 @@
             }
             return salt;
         }
+        
+        public static string GenerateUserClaimsKey()
+        {
+            Random random = new Random();
+            string key = "";
+            for (int i = 1; i <= 32; i++)
+            {
+                int aleat;
+                do
+                {
+                    aleat = random.Next(65, 122);
+                } while (aleat > 90 && aleat < 97);
+                key += Convert.ToChar(aleat);
+            }
+            return key;
+        }
 
         public static bool CompareArrays(byte[] a, byte[] b)
         {

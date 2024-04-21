@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+﻿using System.Diagnostics;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace ApiAthanasia.Helpers
@@ -71,6 +72,8 @@ namespace ApiAthanasia.Helpers
                 }
             }
         }
+
+       
 
     }
 }
