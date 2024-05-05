@@ -4,6 +4,7 @@ using ApiAthanasia.Helpers;
 using ApiAthanasia.Models.Tables;
 using ApiAthanasia.Models.Util;
 using ApiAthanasia.Models.Views;
+using Azure.Security.KeyVault.Secrets;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
@@ -330,7 +331,6 @@ namespace ApiAthanasia.Repositories
         {
             this.context = context;
         }
-
 
 
         #region PRODUCTO_VIEW

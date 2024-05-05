@@ -2,6 +2,7 @@
 using ApiAthanasia.Models.Api;
 using ApiAthanasia.Models.Tables;
 using ApiAthanasia.Repositories;
+using Azure.Security.KeyVault.Secrets;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,10 +18,13 @@ namespace ApiAthanasia.Controllers
     public class UsuariosController : ControllerBase
     {
         private IRepositoryAthanasia repo;
+        private string encriptKey;
 
-        public UsuariosController(IRepositoryAthanasia repo)
+        public UsuariosController(IRepositoryAthanasia repo, SecretClient secretClient)
         {
             this.repo = repo;
+            KeyVaultSecret secretIssuer = secretClient.GetSecret("EncriptKey");
+            this.encriptKey = secretIssuer.Value;
         }
 
         /// <summary>
@@ -53,8 +57,8 @@ namespace ApiAthanasia.Controllers
         [Route("[action]")]
         public async Task<ActionResult<Usuario>> UsuarioToken()
         {
-            string json = HttpContext.User.FindFirst("UserData").Value.ToString();
-            //string json = HelperCryptography.DecryptString("algo",jsonEncript);
+            string jsonData = HttpContext.User.FindFirst("UserData").Value.ToString();
+            string json = HelperCryptography.DecryptString(this.encriptKey, jsonData);
             Usuario usuario = JsonConvert.DeserializeObject<Usuario>(json);
             if (usuario == null)
             {

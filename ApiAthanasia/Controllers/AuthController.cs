@@ -2,6 +2,7 @@
 using ApiAthanasia.Models;
 using ApiAthanasia.Models.Tables;
 using ApiAthanasia.Repositories;
+using Azure.Security.KeyVault.Secrets;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
@@ -17,12 +18,15 @@ namespace ApiAthanasia.Controllers
     {
         private IRepositoryAthanasia repo;
         private HelperActionServicesOAuth helper;
+        private string encriptKey;
 
 
-        public AuthController(IRepositoryAthanasia repo, HelperActionServicesOAuth helper)
+        public AuthController(IRepositoryAthanasia repo, HelperActionServicesOAuth helper, SecretClient secretClient)
         {
             this.repo = repo;
             this.helper = helper;
+            KeyVaultSecret secretIssuer = secretClient.GetSecret("EncriptKey");
+            this.encriptKey = secretIssuer.Value;
         }
 
         /// <summary>
@@ -42,11 +46,10 @@ namespace ApiAthanasia.Controllers
             }
             SigningCredentials credentials = new SigningCredentials(this.helper.GetKeyToken(), SecurityAlgorithms.HmacSha256);
             string jsonUsuario = JsonConvert.SerializeObject(usuario);
-            //string key = HelperTools.GenerateUserClaimsKey();
-            //HelperCryptography.EncryptString(key, jsonUsuario);
+            string encriptedUser=HelperCryptography.EncryptString(this.encriptKey, jsonUsuario);
             Claim[] informacion = new[]
                 {
-                    new Claim("UserData",jsonUsuario),
+                    new Claim("UserData",encriptedUser),
                 };
             JwtSecurityToken token = new JwtSecurityToken(
                 claims: informacion,
