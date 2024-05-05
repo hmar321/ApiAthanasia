@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using Azure.Security.KeyVault.Secrets;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -11,11 +12,14 @@ namespace ApiAthanasia.Helpers
         public string Audience { get; set; }
         public string SecretKey { get; set; }
 
-        public HelperActionServicesOAuth(IConfiguration config)
+        public HelperActionServicesOAuth(SecretClient secretClient)
         {
-            this.Issuer = config.GetValue<string>("ApiOAuth:Issuer");
-            this.Audience = config.GetValue<string>("ApiOAuth:Audience");
-            this.SecretKey = config.GetValue<string>("ApiOAuth:SecretKey");
+            KeyVaultSecret secretIssuer = secretClient.GetSecret("Issuer");
+            KeyVaultSecret secretAudience = secretClient.GetSecret("Audience");
+            KeyVaultSecret secretSecretKey = secretClient.GetSecret("SecretKey");
+            this.Issuer = secretIssuer.Value;
+            this.Audience = secretAudience.Value;
+            this.SecretKey = secretSecretKey.Value;
         }
 
         public SymmetricSecurityKey GetKeyToken()

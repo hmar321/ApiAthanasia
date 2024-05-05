@@ -322,7 +322,6 @@ using System.Diagnostics.Metrics;
 
 namespace ApiAthanasia.Repositories
 {
-    //GetAllPedidoViewByIdUsuario
     public class RepositoryAthanasia : IRepositoryAthanasia
     {
         private AthanasiaContext context;

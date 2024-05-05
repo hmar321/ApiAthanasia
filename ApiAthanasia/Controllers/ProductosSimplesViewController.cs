@@ -91,8 +91,12 @@ namespace ApiAthanasia.Controllers
         /// <response code="404">NotFound. No se encontraron vistas de productos simples para la búsqueda y paginación especificadas.</response>
         [HttpGet]
         [Route("[action]/{busqueda}/{posicion}/{registros}")]
-        public async Task<ActionResult<PaginacionModel<ProductoSimpleView>>> PaginacionBusqueda(string busqueda, int posicion, int registros)
+        public async Task<ActionResult<PaginacionModel<ProductoSimpleView>>> PaginacionBusqueda(string? busqueda, int posicion, int registros)
         {
+            if (busqueda==null)
+            {
+                busqueda = "";
+            }
             PaginacionModel<ProductoSimpleView> model = await this.repo.GetAllProductoSimpleViewSearchPaginacionAsync(busqueda, posicion, registros);
             if (model.Lista.Count == 0)
             {
@@ -130,8 +134,12 @@ namespace ApiAthanasia.Controllers
         /// <response code="404">NotFound. No se encontraron vistas de productos simples para la búsqueda y filtros especificados.</response>
         [HttpPost]
         [Route("[action]/{busqueda}/{posicion}/{registros}")]
-        public async Task<ActionResult<PaginacionModel<ProductoSimpleView>>> PaginacionBusquedaCategoriasGeneros(string busqueda, int posicion, int registros, CategoriasGenerosModel idsmodel)
+        public async Task<ActionResult<PaginacionModel<ProductoSimpleView>>> PaginacionBusquedaCategoriasGeneros(string? busqueda, int posicion, int registros, CategoriasGenerosModel idsmodel)
         {
+            if (busqueda == null)
+            {
+                busqueda = "";
+            }
             PaginacionModel<ProductoSimpleView> model = await this.repo.GetProductoSimpleViewsCategoriasGeneroAsync(busqueda, posicion, registros, idsmodel.IdsCategorias, idsmodel.IdsGeneros);
             if (model.Lista.Count == 0)
             {
