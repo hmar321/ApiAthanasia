@@ -745,7 +745,7 @@ namespace ApiAthanasia.Repositories
         public async Task<int> UpdatePedidoEstadoCancelarAsync(int idpedido)
         {
             Pedido pedido = await this.context.Pedidos.FirstOrDefaultAsync(p => p.IdPedido == idpedido);
-            if (pedido != null)
+            if (pedido == null)
             {
                 return -1;
             }
