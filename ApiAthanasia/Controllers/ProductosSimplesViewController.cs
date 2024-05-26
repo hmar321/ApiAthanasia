@@ -68,16 +68,11 @@ namespace ApiAthanasia.Controllers
         /// <param name="posicion">Posición de la página.</param>
         /// <param name="registros">Número de registros por página.</param>
         /// <response code="200">Devuelve una paginación de vistas de productos simples.</response>
-        /// <response code="404">NotFound. No se encontraron vistas de productos simples para la paginación especificada.</response>
         [HttpGet]
         [Route("[action]/{posicion}/{registros}")]
         public async Task<ActionResult<PaginacionModel<ProductoSimpleView>>> Paginacion(int posicion, int registros)
         {
             PaginacionModel<ProductoSimpleView> model = await this.repo.GetProductosSimplesPaginacionAsyn(posicion, registros);
-            if (model == null)
-            {
-                return NotFound();
-            }
             return model;
         }
 
@@ -88,7 +83,6 @@ namespace ApiAthanasia.Controllers
         /// <param name="posicion">Posición de la página.</param>
         /// <param name="registros">Número de registros por página.</param>
         /// <response code="200">Devuelve una paginación de vistas de productos simples que coinciden con la búsqueda.</response>
-        /// <response code="404">NotFound. No se encontraron vistas de productos simples para la búsqueda y paginación especificadas.</response>
         [HttpGet]
         [Route("[action]/{busqueda}/{posicion}/{registros}")]
         public async Task<ActionResult<PaginacionModel<ProductoSimpleView>>> PaginacionBusqueda(string? busqueda, int posicion, int registros)
@@ -98,10 +92,6 @@ namespace ApiAthanasia.Controllers
                 busqueda = "";
             }
             PaginacionModel<ProductoSimpleView> model = await this.repo.GetAllProductoSimpleViewSearchPaginacionAsync(busqueda, posicion, registros);
-            if (model.Lista.Count == 0)
-            {
-                return NotFound();
-            }
             return model;
         }
 
@@ -131,7 +121,6 @@ namespace ApiAthanasia.Controllers
         /// <param name="registros">Número de registros por página.</param>
         /// <param name="idsmodel">Modelo que contiene los Ids de categorías y géneros para filtrar.</param>
         /// <response code="200">Devuelve una paginación de vistas de productos simples que coinciden con la búsqueda, categorías y géneros.</response>
-        /// <response code="404">NotFound. No se encontraron vistas de productos simples para la búsqueda y filtros especificados.</response>
         [HttpPost]
         [Route("[action]/{busqueda}/{posicion}/{registros}")]
         public async Task<ActionResult<PaginacionModel<ProductoSimpleView>>> PaginacionBusquedaCategoriasGeneros(string? busqueda, int posicion, int registros, CategoriasGenerosModel idsmodel)
@@ -141,10 +130,6 @@ namespace ApiAthanasia.Controllers
                 busqueda = "";
             }
             PaginacionModel<ProductoSimpleView> model = await this.repo.GetProductoSimpleViewsCategoriasGeneroAsync(busqueda, posicion, registros, idsmodel.IdsCategorias, idsmodel.IdsGeneros);
-            if (model.Lista.Count == 0)
-            {
-                return NotFound();
-            }
             return model;
         }
 
