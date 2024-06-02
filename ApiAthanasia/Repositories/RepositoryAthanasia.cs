@@ -93,22 +93,6 @@ using System.Diagnostics.Metrics;
 //inner join PRODUCTO p on l.ID_LIBRO=p.ID_LIBRO and p.PRECIO is not null
 //inner join FORMATO f on p.ID_FORMATO=f.ID_FORMATO and f.NOMBRE is not null
 
-//alter view V_PEDIDO_PRODUCTO as
-// select 
-//   ISNULL(pp.ID_PEDIDO_PRODUCTO,-1) ID_PEDIDO_PRODUCTO,
-//   p.ID_PEDIDO,
-//   l.TITULO,
-//   f.NOMBRE FORMATO,
-//   pp.UNIDADES,
-//   pr.PRECIO,
-//   ep.NOMBRE ESTADO_PEDIDO
-//from PEDIDO p
-//inner join ESTADO_PEDIDO ep on p.ID_ESTADO_PEDIDO=ep.ID_ESTADO_PEDIDO
-//inner join PEDIDOS_PRODUCTOS pp on p.ID_PEDIDO=pp.ID_PEDIDO
-//inner join PRODUCTO pr on pr.ID_PRODUCTO=pp.ID_PRODUCTO
-//inner join FORMATO f on pr.ID_FORMATO=f.ID_FORMATO
-//inner join LIBRO l on pr.ID_LIBRO=l.ID_LIBRO
-
 //create view V_PRODUCTO_BUSCADO as
 //select
 //    ISNULL(p.ID_PRODUCTO, -1) ID_PRODUCTO,
